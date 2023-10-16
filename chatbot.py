@@ -49,13 +49,17 @@ def ask_response(kbresponse):
     else:
         print("No")
 kb = createResolutionKB()
+
+kb.tell(Forall("$x", Forall("$y", Implies(And(brother("$x", "$y"), Not(Equals("$x", "$y"))), areSiblings("$x", "$y")))))
+
 while (True):
     prompt = input("Prompt: ")
     isMatch = re.match(r"(\w+) is (?:the|a|an) (\w+) of (\w+)", prompt)
+    sibsMatch = re.match(r"(\w+) and (\w+) are siblings", prompt)
     parentsMatch = re.match(r"(\w+) and (\w+) are the parents of (\w+)", prompt)
     childrenMatch = re.match(r"(\w+), (\w+), and (\w+) are children of (\w+)", prompt)
     isQuestion = re.match(r"Is (\w+) (?:the|a|an) (\w+) of (\w+)?", prompt)
-    areSibRel = re.match(r"(\w+) and (\w+) (\w+)?", prompt)
+    areSibRel = re.match(r"Are (\w+) and (\w+) (\w+)?", prompt)
     areParentsMatch = re.match(r"Are (\w+) and (\w+) the parents of (\w+)?", prompt)
     areChildrenMatch = re.match(r"Are (\w+), (\w+), and (\w+) children of (\w+)?", prompt)
     if isMatch: # simple is statement
@@ -66,6 +70,12 @@ while (True):
         print("relation: ", relation)
         print("person 2:", person2)
         response = kb.tell(Atom(relation.capitalize(), person1, person2))
+        tell_response(response.status)
+    elif sibsMatch:
+        sib1, sib2 = make_lower(sibsMatch.groups())
+        print("sibling 1: ", sib1)
+        print("sibling 2: ", sib2)
+        response = kb.tell(areSiblings(sib1, sib2))
         tell_response(response.status)
     elif parentsMatch: # statements regarding parents
         parent1, parent2, child = make_lower(parentsMatch.groups())
@@ -92,9 +102,9 @@ while (True):
         response = kb.ask(Atom(relation.capitalize(), person1, person2))
         ask_response(response.status)
     elif areSibRel:
-        person1, relation, person2 = areSibRel.groups()
-        person1 = person1.lower
-        person2 = person2.lower
+        person1, person2, relation = areSibRel.groups()
+        person1 = person1.lower()
+        person2 = person2.lower()
         response = kb.ask(Atom(relation.capitalize(), person1, person2))
         ask_response(response.status)
     elif areParentsMatch:
