@@ -1,6 +1,8 @@
 from logic import *
 import re
 
+def areRelatives(name1, name2):
+    return Atom("Relatives", name1, name2)
 def areSiblings(name1, name2):
     return Atom("Siblings", name1, name2)
 def sister(sister, person):
@@ -34,23 +36,20 @@ def aunt(aunt, person):
 
 def make_lower(groups):
     return tuple(element.lower() for element in groups)
-def tell_response(kbresponse):
-    if kbresponse == 'CONTINGENT':
-        print("Learned something new")
-    elif kbresponse == 'ENTAILMENT':
-        print("Already knew that")
-    else:
-        print("That's impossible")
-def ask_response(kbresponse):
-    if kbresponse == 'CONTINGENT':
-        print("Not sure")
-    elif kbresponse == 'ENTAILMENT':
-        print("Yes")
-    else:
-        print("No")
+def three_not_equal(element1, element2, element3):
+    return And(And(Not(Equals(element1, element2)), Not(Equals(element1, element3))), Not(Equals(element2, element3)))
 kb = createResolutionKB()
 
-kb.tell(Forall("$x", Forall("$y", Implies(And(brother("$x", "$y"), Not(Equals("$x", "$y"))), areSiblings("$x", "$y")))))
+response = kb.tell(Forall("$x", Forall("$y", And(And(areRelatives("$x", "$y"), Not(Equals("$x", "$y"))), areRelatives("$y", "$x"))))) # If x is a relative of y then y is also a relative of x
+print(response)
+response = kb.tell(Forall("$x", Forall("$y", And(And(areSiblings("$x", "$y"), Not(Equals("$x", "$y"))), areSiblings("$y", "$x"))))) # If x is a sibling of y then y is also a sibling of x
+print(response)
+response = kb.tell(Forall("$x", Forall("$y", And(And(And(Or(sister("$x", "$y"), brother("$x", "$y")), Not(Equals("$x", "$y"))), areSiblings("$x", "$y")), areRelatives("$x", "$y"))))) # All brothers and sisters are siblings and relatives with someone
+print(response)
+response = kb.tell(Forall("$x", Forall("$y",  And(Or(And(Not(brother("$x", "$y")), Not(sister("$x", "$y"))), Not(Equiv(brother("$x", "$y"), sister("$x", "$y")))), Not(Equals("$x", "$y")))))) # A person cannot be a brother and sister at the same time
+print(response)
+response = kb.tell(Forall("$x", Forall("$y", Forall("$z", Implies(brother("$x", "$y"), And(areSiblings("$x", "$z"), brother("$x", "$z"))))))) # a brother to someone is a brother to all siblings of that someone; a sister to someone is a sister to all siblings of that someone
+print(response)
 
 while (True):
     prompt = input("Prompt: ")
@@ -70,13 +69,13 @@ while (True):
         print("relation: ", relation)
         print("person 2:", person2)
         response = kb.tell(Atom(relation.capitalize(), person1, person2))
-        tell_response(response.status)
+        print(response)
     elif sibsMatch:
         sib1, sib2 = make_lower(sibsMatch.groups())
         print("sibling 1: ", sib1)
         print("sibling 2: ", sib2)
         response = kb.tell(areSiblings(sib1, sib2))
-        tell_response(response.status)
+        print(response)
     elif parentsMatch: # statements regarding parents
         parent1, parent2, child = make_lower(parentsMatch.groups())
         print("parent 1: ", parent1)
@@ -84,7 +83,7 @@ while (True):
         print("child:", child)
         response = kb.tell(And(Atom("Parent", parent1, child),
                                 Atom("Parent", parent2, child)))
-        tell_response(response.status)
+        print(response)
     elif childrenMatch: # statements regarding children
         child1, child2, child3, ancestor = make_lower(childrenMatch.groups())
         print("child 1: ", child1)
@@ -94,24 +93,24 @@ while (True):
         response = kb.tell(And(child(child1, ancestor), 
                 And(child(child2, ancestor), 
                     child(child3, ancestor))))
-        tell_response(response.status)
+        print(response)
     elif isQuestion:
         person1, relation, person2 = isQuestion.groups()
         person1 = person1.lower()
         person2 = person2.lower()
         response = kb.ask(Atom(relation.capitalize(), person1, person2))
-        ask_response(response.status)
+        print(response)
     elif areSibRel:
         person1, person2, relation = areSibRel.groups()
         person1 = person1.lower()
         person2 = person2.lower()
         response = kb.ask(Atom(relation.capitalize(), person1, person2))
-        ask_response(response.status)
+        print(response)
     elif areParentsMatch:
         parent1, parent2, child = make_lower(areParentsMatch.groups())
         response = kb.ask(And(Atom("Parent", parent1, child),
                                 Atom("Parent", parent2, child)))
-        ask_response(response.status)
+        print(response)
     elif areChildrenMatch: # statements regarding children
         child1, child2, child3, ancestor = make_lower(areChildrenMatch.groups())
         print("child 1: ", child1)
@@ -121,7 +120,7 @@ while (True):
         response = kb.ask(And(child(child1, ancestor), 
                 And(child(child2, ancestor), 
                     child(child3, ancestor))))
-        ask_response(response.status)
+        print(response)
     # more question pattern matching to be added regarding who's question
     else:
         print("Sentence mismatch")
