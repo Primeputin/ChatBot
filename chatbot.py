@@ -21,8 +21,8 @@ def brother(brother, person):
     return Atom("Brother", brother, person)
 def father(father, person):
     return Atom("Father", father, person)
-def parents(parent1, parent2, person):
-    return And(Atom("Parent", parent1, person), Atom("Parent", parent2, person))
+def parent(parent, child):
+    return Atom("Parent", parent, child)
 def grandfathter(grandfather, person):
     return Atom("Grandfather", grandfather, person)
 def childrenOf(child1, child2, child3, ancestor):
@@ -40,16 +40,22 @@ def three_not_equal(element1, element2, element3):
     return And(And(Not(Equals(element1, element2)), Not(Equals(element1, element3))), Not(Equals(element2, element3)))
 kb = createResolutionKB()
 
-response = kb.tell(Forall("$x", Forall("$y", And(And(areRelatives("$x", "$y"), Not(Equals("$x", "$y"))), areRelatives("$y", "$x"))))) # If x is a relative of y then y is also a relative of x
+response = kb.tell(Forall("$x", Not(areRelatives("$x", "$x"))))
 print(response)
-response = kb.tell(Forall("$x", Forall("$y", And(And(areSiblings("$x", "$y"), Not(Equals("$x", "$y"))), areSiblings("$y", "$x"))))) # If x is a sibling of y then y is also a sibling of x
+response = kb.tell(Forall("$x", Forall("$y", Implies(Or(father("$x", "$y"), Or(mother("$x", "$y"), Or(brother("$x", "$y"), sister("$x", "$y")))), areRelatives("$x", "$y"))))) # If there is a connection between them, they are both relatives of each other
 print(response)
-response = kb.tell(Forall("$x", Forall("$y", And(And(And(Or(sister("$x", "$y"), brother("$x", "$y")), Not(Equals("$x", "$y"))), areSiblings("$x", "$y")), areRelatives("$x", "$y"))))) # All brothers and sisters are siblings and relatives with someone
+response = kb.tell(Forall("$x", Forall("$y", Implies(areRelatives("$x", "$y"), areRelatives("$y", "$x"))))) # they are both relatives of each other
 print(response)
-response = kb.tell(Forall("$x", Forall("$y",  And(Or(And(Not(brother("$x", "$y")), Not(sister("$x", "$y"))), Not(Equiv(brother("$x", "$y"), sister("$x", "$y")))), Not(Equals("$x", "$y")))))) # A person cannot be a brother and sister at the same time
+
+response = kb.tell(Forall("$x", Forall("$y", Implies(And(Not(Equals("$x", "$y")), Or(sister("$x", "$y"), brother("$x", "$y"))), areSiblings("$x", "$y"))))) # All brothers and sisters are siblings of someone
 print(response)
-response = kb.tell(Forall("$x", Forall("$y", Forall("$z", Implies(brother("$x", "$y"), And(areSiblings("$x", "$z"), brother("$x", "$z"))))))) # a brother to someone is a brother to all siblings of that someone; a sister to someone is a sister to all siblings of that someone
+response = kb.tell(Forall("$x", Forall("$y", Implies(areSiblings("$x", "$y"), areSiblings("$y", "$x"))))) # they are both siblings of each other
 print(response)
+response = kb.tell(Forall("$x", Forall("$y", Implies(brother("$x", "$y"), Not(sister("$x", "$y")))))) # a person cannot be a brother and sister at the same time
+print(response)
+
+# a sibling of someone is a sibling to all siblings
+# a brother of someone is a brother to all siblings
 
 while (True):
     prompt = input("Prompt: ")
