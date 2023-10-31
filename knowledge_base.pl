@@ -93,19 +93,15 @@ one_grandmother(Person) :-
 child(X, Y) :- child_of(X, Y).
 child(X, Y) :- parent(Y, X).
 not_child_of(X, Y) :- X = Y.
-not_child_of(X, Y) :- child_of(Y, X).
-not_child_of(X, Y) :- parent(X, Y).
-not_child_of(X, Y) :- siblings(X, Y).
-not_child_of(X, Y) :- grandparent(X, Y), grandparent(Y, X).
-not_child_of(X, Y) :- uncle(X, Y); uncle(Y, X).
-not_child_of(X, Y) :- aunt(X, Y); aunt(Y, X).
+not_child_of(X, Y) :- relatives(X, Y), \+ child_of(X, Y).
 not_child(X, Y) :- not_child_of(X, Y).
 
 parent(X, Y) :- child_of(Y,X).
-not_parent(X, Y) :- child(X, Y).
+not_parent(X, Y) :- relatives(X, Y), \+ parent(X, Y).
 not_parent(X, Y) :- X = Y.
 not_parent(X, Y) :- two_parents(Y), \+ parent(X, Y). % there could only be a max of two parents
 
+% no need to check not father and mother wherein person1 = person2
 not_father(X, Y) :- not_parent(X, Y).
 not_father(X, _) :- not_male(X).
 not_father(X, Y) :- one_father(Y), \+ father(X, Y). % max of one father
@@ -156,17 +152,12 @@ sister(Person1, Person2) :-
     siblings(Person1, Person2). % Check if they are siblings  
 
 grandparent(Person1, Person2) :- parent(Person1, Person), parent(Person, Person2), Person1 \= Person2.
-not_grandparent(Person1, Person2) :- grandparent(Person2, Person1).
-not_grandparent(Person1, Person2) :- siblings(Person1, Person2).
-not_grandparent(Person1, Person2) :- uncle(Person1, Person2); uncle(Person2, Person1).
-not_grandparent(Person1, Person2) :- aunt(Person1, Person2); aunt(Person2, Person1).
-not_grandparent(Person1, Person2) :- parent(Person1, Person2).
-not_grandparent(Person1, Person2) :- child(Person1, Person2).
+not_grandparent(Person1, Person2) :- relatives(Person1, Person2), \+ grandparent(Person1, Person2).
 not_grandparent(Person1, Person2) :- Person1 = Person2.
 not_grandparent(Person1, Person2) :- two_grandparents(Person2), \+ grandparent(Person1, Person2). % there could only be a max of two grand parents
 
 
-
+% no need to check not grandfather and grandmother wherein person1 = person2
 grandfather(Person1, Person2) :- 
     male(Person1),
     Person1 \= Person2,
@@ -186,22 +177,15 @@ not_grandmother(Person1, Person2) :- one_grandmother(Person2, \+ grandmother(Per
 uncle(Person1, Person2) :- male(Person1), siblings(Person1, Person), parent(Person, Person2), Person1 \= Person2.
 uncle(Person1, Person2) :- male(Person1), married(Person1, Spouse), siblings(Spouse, Sibling), parent(Sibling, Person2), Person1 \= Person2.
 not_uncle(Person1, _) :- not_male(Person1).
-not_uncle(Person1, Person2) :- grandparent(Person1, Person2); grandparent(Person2, Person1).
-not_uncle(Person1, Person2) :- siblings(Person1, Person2).
-not_uncle(Person1, Person2) :- uncle(Person2, Person1).
-not_uncle(Person1, Person2) :- aunt(Person1, Person2), aunt(Person2, Person1).
-not_uncle(Person1, Person2) :- parent(Person1, Person2).
-not_uncle(Person1, Person2) :- child(Person1, Person2).
+not_uncle(Person1, Person2) :- relatives(Person1, Person2), \+ uncle(Person1, Person2).
+not_uncle(Person1, Person2) :- Person1 = Person2.
+
 % for some reason, can't use sister/2
 aunt(Person1, Person2) :- not_male(Person1), siblings(Person1, Person), parent(Person, Person2), Person1 \= Person2.
 aunt(Person1, Person2) :- not_male(Person1), married(Person1, Spouse), siblings(Spouse, Sibling), parent(Sibling, Person2), Person1 \= Person2.
 not_aunt(Person1, _) :- male(Person1).
-not_aunt(Person1, Person2) :- grandparent(Person1, Person2); grandparent(Person2, Person1).
-not_aunt(Person1, Person2) :- siblings(Person1, Person2).
-not_aunt(Person1, Person2) :- uncle(Person2, Person1), uncle(Person2, Person1).
-not_aunt(Person1, Person2) :- aunt(Person1, Person2).
-not_aunt(Person1, Person2) :- parent(Person1, Person2).
-not_aunt(Person1, Person2) :- child(Person1, Person2).
+not_aunt(Person1, Person2) :- relatives(Person1, Person2), \+ aunt(Person1, Person2).
+not_aunt(Person1, Person2) :- Person1 = Person2.
 
 married(Person1, Person2) :- (parent(Person1, Person), parent(Person2, Person)); (parent(Person2, Person), mother(Person1, Person)), Person1 \= Person2.
 not_married(Person1, _) :- \+ married(Person1, _).
