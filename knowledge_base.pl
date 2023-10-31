@@ -52,6 +52,38 @@
 :- dynamic male/1.
 :- dynamic not_male/1.
 
+:- dynamic two_parents/1.
+:- dynamic one_father/1.
+:- dynamic one_mother/1.
+:- dynamic two_grandparents/1.
+:- dynamic one_grandfather/1.
+:- dynamic one_grandmother/1.
+
+two_parents(Person) :-
+    findall(Parent, parent(Parent, Person), Parents),
+    length(Parents, NumParents),
+    NumParents = 2.
+one_father(Person) :-
+    findall(Father, father(Father, Person), Fathers),
+    length(Fathers, NumFather),
+    NumFather = 1.
+one_mother(Person) :-
+    findall(Mother, mother(Mother, Person), Mothers),
+    length(Mothers, NumMother),
+    NumMother = 1.
+
+two_grandparents(Person) :-
+    findall(GrandParent, parent(GrandParent, Person), GrandParents),
+    length(GrandParents, NumGrandParents),
+    NumGrandParents = 2.
+one_grandfather(Person) :-
+    findall(GrandFather, father(GrandFather, Person), GrandFathers),
+    length(GrandFathers, NumGrandFather),
+    NumGrandFather = 1.
+one_grandmother(Person) :-
+    findall(GrandMother, mother(GrandMother, Person), GrandMothers),
+    length(GrandMothers, NumGrandMother),
+    NumGrandMother = 1.
 
 child(X, Y) :- child_of(X, Y).
 child(X, Y) :- parent(Y, X).
@@ -67,10 +99,14 @@ not_child(X, Y) :- not_child_of(X, Y).
 parent(X, Y) :- child_of(Y,X).
 not_parent(X, Y) :- child(X, Y).
 not_parent(X, Y) :- X = Y.
+not_parent(_, Y) :- two_parents(Y). % there could only be a max of two parents
+
 not_father(X, Y) :- not_parent(X, Y).
 not_father(X, _) :- not_male(X).
+not_father(_, Y) :- one_father(Y). % max of one father
 not_mother(X, Y) :- not_parent(X, Y).
 not_mother(X, _) :- male(X).
+not_mother(_, Y) :- one_mother(Y). % max of one mother
 
 son(X, Y) :- child(X, Y), male(X).
 not_son(X, _) :- not_male(X).
@@ -122,17 +158,24 @@ not_grandparent(Person1, Person2) :- aunt(Person1, Person2); aunt(Person2, Perso
 not_grandparent(Person1, Person2) :- parent(Person1, Person2).
 not_grandparent(Person1, Person2) :- child(Person1, Person2).
 not_grandparent(Person1, Person2) :- Person1 = Person2.
+not_grandparent(_, Person2) :- two_grandparents(Person2). % there could only be a max of two grand parents
+
+
 
 grandfather(Person1, Person2) :- 
     male(Person1),
     Person1 \= Person2,
     grandparent(Person1, Person2).
 not_grandfather(Person1, _) :- not_male(Person1).
+not_grandfather(Person1, Person2) :- not_grandparent(Person1, Person2).
+not_grandfather(_, Person2) :- one_grandfather(Person2).
 grandmother(Person1, Person2) :- 
     not_male(Person1),
     Person1 \= Person2,
     grandparent(Person1, Person2).
 not_grandmother(Person1, _) :- male(Person1).
+not_grandmother(Person1, Person2) :- not_grandparent(Person1, Person2).
+not_grandmother(_, Person2) :- one_grandmother(Person2).
  
  % for some reason, can't use brother/2
 uncle(Person1, Person2) :- male(Person1), siblings(Person1, Person), parent(Person, Person2), Person1 \= Person2.

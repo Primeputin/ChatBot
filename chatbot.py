@@ -26,7 +26,7 @@ def is_female(relation):
     return False
 
 def tell_response(kb, statement, person1, relation, person2):
-    if person1 == person2:
+    if person1 == person2 or bool(list(kb.query(f'not_' + statement))):
         return -1 # contradiction
     if bool(list(kb.query(statement))):
         return 1 # entailment
@@ -95,7 +95,7 @@ def compound_respond(kb, people, relation, person):
 
 # doesn't assert anything, just checking
 def check_tell_response(kb, statement, person1, relation, person2):
-    if person1 == person2:
+    if person1 == person2 or bool(list(kb.query(f'not_' + statement))):
         return -1 # contradiction
     if bool(list(kb.query(statement))):
         return 1 # entailment
