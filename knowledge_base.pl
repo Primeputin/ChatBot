@@ -222,4 +222,8 @@ relatives(Person1, Person2) :- parent(Person1, Person2).
 relatives(Person1, Person2) :- child(Person1, Person2).
 relatives(Person1, Person2) :- married(Person1, Person2).
 relatives(Person1, Person2) :- descendant(Person1, Person2); descendant(Person2, Person1).
+relatives(Person1, _) :- uncle(Person1, Person), descendant(Person, _). 
+relatives(_, Person1) :- uncle(Person1, Person), descendant(Person, _).
+relatives(Person1, _) :- aunt(Person1, Person), descendant(Person, _). 
+relatives(_, Person1) :- aunt(Person1, Person), descendant(Person, _).
 not_relatives(Person1, Person2) :- Person1 = Person2.
