@@ -26,7 +26,7 @@ def is_female(relation):
     return False
 
 def tell_response(kb, statement, person1, relation, person2):
-    if person1 == person2 or bool(list(kb.query(f'not_' + statement))):
+    if person1 == person2 or bool(list(kb.query(f'not_' + statement))): # second condition is important just in case it's already not valid
         return -1 # contradiction
     if bool(list(kb.query(statement))):
         return 1 # entailment
