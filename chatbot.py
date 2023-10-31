@@ -203,9 +203,6 @@ while (True):
         ask_response(kb, person1, relation, person2)
     elif areSibRel:
         person1, person2, relation = make_lower(areSibRel.groups())
-        print(person1)
-        print(relation)
-        print(person2)
         ask_response(kb, person1, relation, person2)
     elif areParentsMatch:
         parent1, parent2, child = make_lower(areParentsMatch.groups())
