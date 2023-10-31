@@ -62,6 +62,8 @@
 :- dynamic one_grandfather/1.
 :- dynamic one_grandmother/1.
 
+:- dynamic descendant/2.
+
 two_parents(Person) :-
     findall(Parent, parent(Parent, Person), Parents),
     length(Parents, NumParents),
@@ -204,6 +206,14 @@ not_aunt(Person1, Person2) :- child(Person1, Person2).
 married(Person1, Person2) :- (parent(Person1, Person), parent(Person2, Person)); (parent(Person2, Person), mother(Person1, Person)), Person1 \= Person2.
 not_married(Person1, _) :- \+ married(Person1, _).
 
+% Define a rule to check if X is a descendant of Y
+descendant(X, Y) :-
+    parent(Y, X). % X is a direct child of Y
+
+descendant(X, Y) :-
+    parent(Z, X), % X has a parent Z
+    descendant(Z, Y). % Z is a descendant of Y
+
 relatives(Person1, Person2) :- siblings(Person1, Person2).
 relatives(Person1, Person2) :- grandparent(Person1, Person2); grandparent(Person2, Person1).
 relatives(Person1, Person2) :- uncle(Person1, Person2); uncle(Person2, Person1).
@@ -211,4 +221,5 @@ relatives(Person1, Person2) :- aunt(Person1, Person2); aunt(Person2, Person1).
 relatives(Person1, Person2) :- parent(Person1, Person2).
 relatives(Person1, Person2) :- child(Person1, Person2).
 relatives(Person1, Person2) :- married(Person1, Person2).
+relatives(Person1, Person2) :- descendant(Person1, Person2); descendant(Person2, Person1).
 not_relatives(Person1, Person2) :- Person1 = Person2.
