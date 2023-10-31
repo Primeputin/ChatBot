@@ -182,6 +182,7 @@ not_grandmother(Person1, Person2) :- one_grandmother(Person2, \+ grandmother(Per
  
  % for some reason, can't use brother/2
 uncle(Person1, Person2) :- male(Person1), siblings(Person1, Person), parent(Person, Person2), Person1 \= Person2.
+uncle(Person1, Person2) :- male(Person1), married(Person1, Spouse), siblings(Spouse, Sibling), parent(Sibling, Person2), Person1 \= Person2.
 not_uncle(Person1, _) :- not_male(Person1).
 not_uncle(Person1, Person2) :- grandparent(Person1, Person2); grandparent(Person2, Person1).
 not_uncle(Person1, Person2) :- siblings(Person1, Person2).
@@ -191,6 +192,7 @@ not_uncle(Person1, Person2) :- parent(Person1, Person2).
 not_uncle(Person1, Person2) :- child(Person1, Person2).
 % for some reason, can't use sister/2
 aunt(Person1, Person2) :- not_male(Person1), siblings(Person1, Person), parent(Person, Person2), Person1 \= Person2.
+aunt(Person1, Person2) :- not_male(Person1), married(Person1, Spouse), siblings(Spouse, Sibling), parent(Sibling, Person2), Person1 \= Person2.
 not_aunt(Person1, _) :- male(Person1).
 not_aunt(Person1, Person2) :- grandparent(Person1, Person2); grandparent(Person2, Person1).
 not_aunt(Person1, Person2) :- siblings(Person1, Person2).
@@ -199,10 +201,14 @@ not_aunt(Person1, Person2) :- aunt(Person1, Person2).
 not_aunt(Person1, Person2) :- parent(Person1, Person2).
 not_aunt(Person1, Person2) :- child(Person1, Person2).
 
+married(Person1, Person2) :- (parent(Person1, Person), parent(Person2, Person)); (parent(Person2, Person), mother(Person1, Person)), Person1 \= Person2.
+not_married(Person1, _) :- \+ married(Person1, _).
+
 relatives(Person1, Person2) :- siblings(Person1, Person2).
 relatives(Person1, Person2) :- grandparent(Person1, Person2); grandparent(Person2, Person1).
 relatives(Person1, Person2) :- uncle(Person1, Person2); uncle(Person2, Person1).
 relatives(Person1, Person2) :- aunt(Person1, Person2); aunt(Person2, Person1).
 relatives(Person1, Person2) :- parent(Person1, Person2).
 relatives(Person1, Person2) :- child(Person1, Person2).
+relatives(Person1, Person2) :- married(Person1, Person2).
 not_relatives(Person1, Person2) :- Person1 = Person2.
