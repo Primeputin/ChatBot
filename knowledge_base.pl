@@ -87,7 +87,6 @@ one_grandmother(Person) :-
     length(GrandMothers, NumGrandMother),
     NumGrandMother = 1.
 
-child(X, Y) :- child(Z, Y), siblings(Z, X).
 not_child(X, Y) :- X = Y.
 not_child(X, Y) :- relatives(X, Y), \+ child(X, Y).
 
