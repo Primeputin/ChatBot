@@ -5,8 +5,8 @@ kb = Prolog()
 kb.consult("knowledge_base.pl")
 
 simplified = {'brother': 'sibling', 'sister': 'sibling', 'father': 'parent', 'mother': 'parent',
-              'grandfather': 'grandparent', 'grandmother': 'grandparent', 'son': 'child_of',
-              'daughter': 'child_of', 'child': 'child_of', 'siblings': 'sibling',
+              'grandfather': 'grandparent', 'grandmother': 'grandparent', 'son': 'child',
+              'daughter': 'child', 'child': 'child', 'siblings': 'sibling',
               'uncle': 'uncle', 'aunt': 'aunt'}
 
 def make_lower(groups):
@@ -38,6 +38,9 @@ def tell_response(kb, statement, person1, relation, person2):
     if not right and not_right or gender == -1:  
         return -1 # contradiction
     else:
+        if simplified[relation] == 'parent':
+            kb.assertz(f'child({person2}, {person1})')
+
         kb.assertz(f'{simplified[relation]}({person1}, {person2})')
         return 0 # contingency   
     

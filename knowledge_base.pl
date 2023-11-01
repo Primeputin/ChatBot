@@ -43,9 +43,6 @@
 :- dynamic relatives/2.
 :- dynamic not_relatives/2.
 
-:- dynamic child_of/2.
-:- dynamic not_child_of/2.
-
 :- dynamic child/2.
 :- dynamic not_child/2.
 
@@ -90,13 +87,12 @@ one_grandmother(Person) :-
     length(GrandMothers, NumGrandMother),
     NumGrandMother = 1.
 
-child(X, Y) :- child_of(X, Y).
-child(X, Y) :- parent(Y, X).
-not_child_of(X, Y) :- X = Y.
-not_child_of(X, Y) :- relatives(X, Y), \+ child_of(X, Y).
-not_child(X, Y) :- not_child_of(X, Y).
+child(X, Y) :- child(Z, Y), siblings(Z, X).
+not_child(X, Y) :- X = Y.
+not_child(X, Y) :- relatives(X, Y), \+ child(X, Y).
 
-parent(X, Y) :- child_of(Y,X).
+% parent is only reliant on child since child will always be asserted not parent
+parent(X, Y) :- child(Y,X).
 not_parent(X, Y) :- relatives(X, Y), \+ parent(X, Y).
 not_parent(X, Y) :- X = Y.
 not_parent(X, Y) :- two_parents(Y), \+ parent(X, Y). % there could only be a max of two parents
