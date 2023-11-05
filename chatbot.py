@@ -40,8 +40,8 @@ def tell_response(kb, statement, person1, relation, person2):
     else:
         if simplified[relation] == 'parent':
             kb.assertz(f'child({person2}, {person1})')
-
-        kb.assertz(f'{simplified[relation]}({person1}, {person2})')
+        else:
+            kb.assertz(f'{simplified[relation]}({person1}, {person2})')
         return 0 # contingency   
     
 def tell(response):
