@@ -80,7 +80,7 @@ def morf(kb, person, relation):
 def compound_respond(kb, people, relation, person):
     learned = False
     for i in people:
-        check = f'{relation}({person}, {i})'
+        check = f'{relation}({i}, {person})'
         response = check_tell_response(kb, check, i, relation, person)
         if response == 0:
             learned = True
