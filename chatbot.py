@@ -33,7 +33,7 @@ def tell_response(kb, statement, person1, relation, person2):
     gender = morf(kb, person1, relation)
     right = bool(list(kb.query(f'{simplified[relation]}({person1}, {person2})')))
     not_right = bool(list(kb.query(f'not_{simplified[relation]}({person1}, {person2})')))
-    if right and not not_right and gender != -1:
+    if right and not not_right and (gender == 2 or gender == 0):
         return 1 # entailment
     if not right and not_right or gender == -1:  
         return -1 # contradiction
@@ -105,7 +105,7 @@ def check_tell_response(kb, statement, person1, relation, person2):
     gender = check_morf(kb, person1, relation)
     right = bool(list(kb.query(f'{simplified[relation]}({person1}, {person2})')))
     not_right = bool(list(kb.query(f'not_{simplified[relation]}({person1}, {person2})')))
-    if right and not not_right and gender != -1:
+    if right and not not_right and (gender == 2 or gender == 0):
         return 1 # entailment
     if not right and not_right or gender == -1:  
         return -1 # contradiction
