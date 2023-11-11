@@ -179,6 +179,63 @@ def compound_ask(kb, people, relation, person):
             print('I don\'t know')
         elif not right and not not_right:
             print('No')
+
+def have_space(name):
+    for i in name:
+        if i == ' ':
+            return True
+    return False
+
+def children_tell_prompt(prompt):
+    childrenParts = prompt.split('are children of')
+    if len(childrenParts) == 2 and childrenParts[1][len(childrenParts[1]) - 1] == '.':
+        parent_name = childrenParts[1].strip().replace('.', '').lower()
+        child_names = [name.strip() for name in childrenParts[0].split(",")]
+        for index in range(len(child_names)):
+            child_parts = child_names[index].split(' ')
+            temp = child_names[index]
+            if len(child_parts) == 1 and child_parts[0] == '':
+                return "", []
+            if len(child_parts) < 1 or len(child_parts) > 2:
+                return "", []
+            first_part = child_parts[0]
+            if index == len(child_names) - 1:
+                if first_part == 'and' and len(child_parts) == 2:
+                    child_names[index] = temp.replace('and', '')
+                    temp = child_names[index]
+                else:
+                    return "", []
+            child_names[index] = temp.strip().lower()
+        return parent_name, child_names
+    return "", []
+
+def children_ask_prompt(prompt):
+    childrenParts = prompt.split('children of')
+    if len(childrenParts) == 2 and childrenParts[0][:3] == 'Are' and childrenParts[1][len(childrenParts[1]) - 1] == '?':
+        parent_name = childrenParts[1].strip().replace('?', '').lower()
+        child_names = [name.strip() for name in childrenParts[0].split(",")]
+        for index in range(len(child_names)):
+            child_parts = child_names[index].split(' ')
+            temp = child_names[index]
+            if len(child_parts) == 1 and child_parts[0] == '':
+                return "", []
+            if len(child_parts) < 1 or len(child_parts) > 2:
+                return "", []
+            first_part = child_parts[0]
+            if index == len(child_names) - 1:
+                if first_part == 'and' and len(child_parts) == 2:
+                    child_names[index] = temp.replace('and', '')
+                    temp = child_names[index]
+                else:
+                    return "", []
+            elif index == 0:
+                if first_part == 'Are' and len(child_parts) == 2:
+                    child_names[index] = temp.replace('Are', '')
+                    temp = child_names[index] 
+            child_names[index] = temp.strip().lower()
+        return parent_name, child_names
+    return "", []
+        
 while (True):
     prompt = input("Prompt: ")
     isMatch = re.match(r"^(\w+) is (?:the|a|an) ((?:father|mother|brother|sister|child|son|daughter|grandfather|grandmother|uncle|aunt)) of (\w+)\.$", prompt)
@@ -199,7 +256,9 @@ while (True):
     whoDaughters = re.match(r"^Who are the daughters of (\w+)\?$", prompt)
     whoChild = re.match(r"^Who are the children of (\w+)\?$", prompt)
     whoPaMa = re.match(r"^Who is the ((?:father|mother)) of (\w+)\?$", prompt)
-
+    
+    parent_tell, children_tell = children_tell_prompt(prompt)
+    parent, children = children_ask_prompt(prompt)
     if whoPaMa: # this is first than isMatch because isMatch may overlap with this one
         relation, person = make_lower(whoPaMa.groups())
         show_relations(list(kb.query(f"{relation}(X, {person})")))
@@ -214,9 +273,11 @@ while (True):
     elif parentsMatch: # statements regarding parents
         parent1, parent2, child = make_lower(parentsMatch.groups())
         tell(compound_respond(kb, [parent1, parent2], 'parent', child))
-    elif childrenMatch: # statements regarding children
-        child1, child2, child3, ancestor = make_lower(childrenMatch.groups())
-        tell(compound_respond(kb, [child1, child2, child3], 'child', ancestor))
+    elif parent_tell and children_tell: # statements regarding children
+        tell(compound_respond(kb, children_tell, 'child', parent_tell))
+    # elif childrenMatch: # statements regarding children
+    #     child1, child2, child3, ancestor = make_lower(childrenMatch.groups())
+    #     tell(compound_respond(kb, [child1, child2, child3], 'child', ancestor))
     elif isQuestion:
         person1, relation, person2 = make_lower(isQuestion.groups())
         ask_response(kb, person1, relation, person2)
@@ -226,9 +287,8 @@ while (True):
     elif areParentsMatch:
         parent1, parent2, child = make_lower(areParentsMatch.groups())
         compound_ask(kb, [parent1, parent2], 'parent', child)
-    elif areChildrenMatch: # statements regarding children
-        child1, child2, child3, ancestor = make_lower(areChildrenMatch.groups())
-        compound_ask(kb, [child1, child2, child3], 'child', ancestor)
+    elif parent and children: # questions about children.
+        compound_ask(kb, children, 'child', parent)
     elif whoSibs:
         person = whoSibs.group(1).lower() # getting the inputted match only
         show_relations(list(kb.query(f"siblings(X, {person})")))
