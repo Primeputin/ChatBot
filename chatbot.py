@@ -345,4 +345,4 @@ while (True):
         print("Sentence mismatch")
     # need to type cast to list to execute the query
     # a query is needed to assess the condition because it won't be checked in Prolog automatically in any case
-    list(kb.query("make_missing_children_parents(X, Y)")) 
+    # list(kb.query("make_missing_children_parents(X, Y)")) 

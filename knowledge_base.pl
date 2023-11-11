@@ -92,11 +92,11 @@ not_child(X, Y) :- relatives(X, Y), \+ child(X, Y).
 
 % This cannot be done normally because it would cause an infinite loop with itself like child(X, Y) :- without the assertz part
 % Make a person a parent of a child who has a sibling
-make_missing_children_parents(Child, Parent) :-
-    child(Child, Parent),
-    siblings(Child, Sibling),
-    \+ child(Sibling, Parent),
-    assertz(child(Sibling, Parent)).
+% make_missing_children_parents(Child, Parent) :-
+%     child(Child, Parent),
+%     siblings(Child, Sibling),
+%     \+ child(Sibling, Parent),
+%     assertz(child(Sibling, Parent)).
 
 % parent is only reliant on child since child will always be asserted not parent
 parent(X, Y) :- child(Y,X).
