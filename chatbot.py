@@ -41,6 +41,22 @@ def tell_response(kb, statement, person1, relation, person2):
         if simplified[relation] == 'parent':
             kb.assertz(f'child({person2}, {person1})')
         else:
+            if simplified[relation] == 'child': # for when a father/mother already exist, therefore the other one should be a father/mother
+                one_father = bool(list(kb.query(f'one_father({person1})')))
+                one_mother = bool(list(kb.query(f'one_mother({person1})')))
+                two_parents = bool(list(kb.query(f'two_parents({person1})')))
+                if one_father and not two_parents:
+                    if check_morf(kb, person2, 'mother') != -1:
+                        kb.assertz(f'not_male({person2})') # person2 is female
+                        kb.assertz(f'not(male({person2}))')
+                    else:
+                        return -1 # contradiction
+                elif one_mother and not two_parents:
+                    if check_morf(kb, person2, 'father') != -1:
+                        kb.assertz(f'male({person2})') # person2 is male
+                        kb.assertz(f'not(not_male({person2}))')
+                    else:
+                        return -1 # contradiction
             kb.assertz(f'{simplified[relation]}({person1}, {person2})')
         return 0 # contingency   
     
