@@ -137,6 +137,7 @@ not_brother(Person1, _) :- not_male(Person1).
 not_sister(Person1, Person2) :- not_siblings(Person1, Person2).
 not_sister(Person1, _) :- male(Person1).
 
+
 father(Person1, Person2) :-
     male(Person1),          % Check if Person1 is a male
     Person1 \= Person2,     % Check if Person1 and Person2 are not the same
@@ -174,7 +175,7 @@ grandmother(Person1, Person2) :-
     grandparent(Person1, Person2).
 not_grandmother(Person1, _) :- male(Person1).
 not_grandmother(Person1, Person2) :- not_grandparent(Person1, Person2).
-not_grandmother(Person1, Person2) :- one_grandmother(Person2, \+ grandmother(Person1, Person2)).
+not_grandmother(Person1, Person2) :- one_grandmother(Person2), \+ grandmother(Person1, Person2).
  
  % for some reason, can't use brother/2
 uncle(Person1, Person2) :- male(Person1), siblings(Person1, Person), parent(Person, Person2), Person1 \= Person2.

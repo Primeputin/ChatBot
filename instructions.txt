@@ -1,0 +1,11 @@
+To run this chatbot, the local computer should have SWI Prolog installed and Python3 installed.
+pyswip module should also be installed. Another library that is being used is re, which is a regex module.
+
+As of right now the requirements are the following:
+Python 3.6 and higher.
+PyPy is currently not supported.
+SWI-Prolog 8.2 and higher.
+libswipl as a shared library. This is the default on most platforms.
+Works on Linux, Windows, MacOS and FreeBSD. Should work on other POSIX
+
+The command to run is python3 chatbot.py. This should be executed in the same directory as the files.
