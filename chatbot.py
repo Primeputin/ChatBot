@@ -204,6 +204,13 @@ def children_tell_prompt(prompt):
         if not all_alpha(parent_name):
             return "",[]
         child_names = [name.strip() for name in childrenParts[0].split(",")]
+        if len(child_names) == 1: # if two children only
+            and_child_names = [name.strip().lower() for name in re.split(r'\s+', child_names[0])]
+            if len(and_child_names) == 3:
+                if all_alpha(and_child_names[0]) and and_child_names[1] == 'and' and all_alpha(and_child_names[2]):
+                    and_child_names.pop(1)
+                    return parent_name, and_child_names
+            return "", []
         for index in range(len(child_names)):
             child_parts = child_names[index].split(' ')
             temp = child_names[index]
@@ -212,7 +219,7 @@ def children_tell_prompt(prompt):
             if len(child_parts) < 1 or len(child_parts) > 2:
                 return "", []
             first_part = child_parts[0]
-            if index == len(child_names) - 1:
+            if index == len(child_names) - 1 and len(child_names) != 2:
                 if first_part == 'and' and len(child_parts) == 2:
                     child_names[index] = temp.replace('and', '')
                     temp = child_names[index]
@@ -231,6 +238,14 @@ def children_ask_prompt(prompt):
         if not all_alpha(parent_name):
             return "",[]
         child_names = [name.strip() for name in childrenParts[0].split(",")]
+        if len(child_names) == 1: # if two children only
+            and_child_names = [name.strip().lower() for name in re.split(r'\s+', child_names[0])]
+            if len(and_child_names) == 4:
+                if and_child_names[0] == 'are' and all_alpha(and_child_names[1]) and and_child_names[2] == 'and' and all_alpha(and_child_names[3]): # are is lower case here from the list comprehension above
+                    and_child_names.pop(0)
+                    and_child_names.pop(2)
+                    return parent_name, and_child_names
+            return "", []
         for index in range(len(child_names)):
             child_parts = child_names[index].split(' ')
             temp = child_names[index]
@@ -239,7 +254,7 @@ def children_ask_prompt(prompt):
             if len(child_parts) < 1 or len(child_parts) > 2:
                 return "", []
             first_part = child_parts[0]
-            if index == len(child_names) - 1:
+            if index == len(child_names) - 1 and len(child_names) != 2:
                 if first_part == 'and' and len(child_parts) == 2:
                     child_names[index] = temp.replace('and', '')
                     temp = child_names[index]
@@ -294,9 +309,6 @@ while (True):
         tell(compound_respond(kb, [parent1, parent2], 'parent', child))
     elif parent_tell and children_tell: # statements regarding children
         tell(compound_respond(kb, children_tell, 'child', parent_tell))
-    # elif childrenMatch: # statements regarding children
-    #     child1, child2, child3, ancestor = make_lower(childrenMatch.groups())
-    #     tell(compound_respond(kb, [child1, child2, child3], 'child', ancestor))
     elif isQuestion:
         person1, relation, person2 = make_lower(isQuestion.groups())
         ask_response(kb, person1, relation, person2)
