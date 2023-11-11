@@ -233,7 +233,7 @@ def children_tell_prompt(prompt):
 
 def children_ask_prompt(prompt):
     childrenParts = prompt.split('children of')
-    if len(childrenParts) == 2 and childrenParts[0][:3] == 'Are' and childrenParts[1][len(childrenParts[1]) - 1] == '?':
+    if len(childrenParts) == 2 and childrenParts[0][:3] == 'are' and childrenParts[1][len(childrenParts[1]) - 1] == '?':
         parent_name = childrenParts[1][:len(childrenParts[1]) - 1].strip().lower()
         if not all_alpha(parent_name):
             return "",[]
@@ -249,20 +249,20 @@ def children_ask_prompt(prompt):
         for index in range(len(child_names)):
             child_parts = child_names[index].split(' ')
             temp = child_names[index]
-            if len(child_parts) == 1 and child_parts[0] == '':
+            if len(child_parts) == 1 and child_parts[0] == '': # if extra empty string
                 return "", []
-            if len(child_parts) < 1 or len(child_parts) > 2:
+            if len(child_parts) < 1 or len(child_parts) > 2: # wrong number left
                 return "", []
             first_part = child_parts[0]
-            if index == len(child_names) - 1 and len(child_names) != 2:
+            if index == len(child_names) - 1 and len(child_names) != 2: # last child and not the second
                 if first_part == 'and' and len(child_parts) == 2:
                     child_names[index] = temp.replace('and', '')
                     temp = child_names[index]
                 else:
                     return "", []
             elif index == 0:
-                if first_part == 'Are' and len(child_parts) == 2:
-                    child_names[index] = temp.replace('Are', '')
+                if first_part == 'are' and len(child_parts) == 2:
+                    child_names[index] = temp.replace('are', '')
                     temp = child_names[index] 
             child_names[index] = temp.strip().lower()
             if not all_alpha(child_names[index]):
@@ -271,25 +271,25 @@ def children_ask_prompt(prompt):
     return "", []
         
 while (True):
-    prompt = input("Prompt: ")
-    isMatch = re.match(r"^(\w+) is (?:the|a|an) ((?:father|mother|brother|sister|child|son|daughter|grandfather|grandmother|uncle|aunt)) of (\w+)\.$", prompt)
-    sibsMatch = re.match(r"^(\w+) and (\w+) are siblings\.$", prompt)
-    parentsMatch = re.match(r"^(\w+) and (\w+) are the parents of (\w+)\.$", prompt)
-    childrenMatch = re.match(r"^(\w+), (\w+), and (\w+) are children of (\w+)\.$", prompt)
+    inputted = input("Prompt: ")
+    prompt = inputted.lower()
 
-    isQuestion = re.match(r"^Is (\w+) (?:the|a|an) ((?:father|mother|brother|sister|child|son|daughter|grandfather|grandmother|uncle|aunt)) of (\w+)\?$", prompt)
-    areSibRel = re.match(r"^Are (\w+) and (\w+) ((?:siblings|relatives))\?$", prompt)
-    areParentsMatch = re.match(r"^Are (\w+) and (\w+) the parents of (\w+)\?$", prompt)
-    areChildrenMatch = re.match(r"^Are (\w+), (\w+), and (\w+) children of (\w+)\?$", prompt)
+    isMatch = re.match(r"^(\w+)\s+is\s+(?:the|a|an)\s+((?:father|mother|brother|sister|child|son|daughter|grandfather|grandmother|uncle|aunt))\s+of\s+(\w+)\.$", prompt)
+    sibsMatch = re.match(r"^(\w+)\s+and\s+(\w+)\s+are\s+siblings\.$", prompt)
+    parentsMatch = re.match(r"^(\w+)\s+and\s+(\w+)\s+are\s+the\s+parents\s+of\s+(\w+)\.$", prompt)
 
-    whoSibs = re.match(r"^Who are the siblings of (\w+)\?$", prompt)
-    whoSis = re.match(r"^Who are the sisters of (\w+)\?$", prompt)
-    whoBro = re.match(r"^Who are the brothers of (\w+)\?$", prompt)
-    whoParents = re.match(r"^Who are the parents of (\w+)\?$", prompt)
-    whoSons = re.match(r"^Who are the sons of (\w+)\?$", prompt)
-    whoDaughters = re.match(r"^Who are the daughters of (\w+)\?$", prompt)
-    whoChild = re.match(r"^Who are the children of (\w+)\?$", prompt)
-    whoPaMa = re.match(r"^Who is the ((?:father|mother)) of (\w+)\?$", prompt)
+    isQuestion = re.match(r"^[Ii]s\s+(\w+)\s+(?:the|a|an)\s+((?:father|mother|brother|sister|child|son|daughter|grandfather|grandmother|uncle|aunt))\s+of\s+(\w+)\?$", prompt)
+    areSibRel = re.match(r"^[Aa]re\s+(\w+)\s+and\s+(\w+)\s+((?:siblings|relatives))\?$", prompt)
+    areParentsMatch = re.match(r"^[Aa]re\s+(\w+)\s+and\s+(\w+)\s+the\s+parents\s+of\s+(\w+)\?$", prompt)
+
+    whoSibs = re.match(r"^[Ww]ho\s+are\s+the\s+siblings\s+of\s+(\w+)\?$", prompt)
+    whoSis = re.match(r"^[Ww]ho\s+are\s+the\s+sisters\s+of\s+(\w+)\?$", prompt)
+    whoBro = re.match(r"^[Ww]ho\s+are\s+the\s+brothers\s+of\s+(\w+)\?$", prompt)
+    whoParents = re.match(r"^[Ww]ho\s+are\s+the\s+parents\s+of\s+(\w+)\?$", prompt)
+    whoSons = re.match(r"^[Ww]ho\s+are\s+the\s+sons\s+of\s+(\w+)\?$", prompt)
+    whoDaughters = re.match(r"^[Ww]ho\s+are\s+the\s+daughters\s+of\s+(\w+)\?$", prompt)
+    whoChild = re.match(r"^[Ww]ho\s+are\s+the\s+children\s+of\s+(\w+)\?$", prompt)
+    whoPaMa = re.match(r"^[Ww]ho\s+is\s+the\s+((?:father|mother))\s+of\s+(\w+)\?$", prompt)
     
     parent_tell, children_tell = children_tell_prompt(prompt)
     parent, children = children_ask_prompt(prompt)
