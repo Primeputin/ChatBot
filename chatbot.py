@@ -200,8 +200,8 @@ def all_alpha(word):
 def children_tell_prompt(prompt):
     childrenParts = prompt.split('are children of')
     if len(childrenParts) == 2 and childrenParts[1][len(childrenParts[1]) - 1] == '.':
-        parent_name = childrenParts[1][len(childrenParts[1]) - 1].strip().lower()
-        if all_alpha(parent_name):
+        parent_name = childrenParts[1][:len(childrenParts[1]) - 1].strip().lower()
+        if not all_alpha(parent_name):
             return "",[]
         child_names = [name.strip() for name in childrenParts[0].split(",")]
         for index in range(len(child_names)):
@@ -219,7 +219,7 @@ def children_tell_prompt(prompt):
                 else:
                     return "", []
             child_names[index] = temp.strip().lower()
-            if not all_alpha(child_names):
+            if not all_alpha(child_names[index]):
                 return "", []
         return parent_name, child_names
     return "", []
@@ -227,8 +227,8 @@ def children_tell_prompt(prompt):
 def children_ask_prompt(prompt):
     childrenParts = prompt.split('children of')
     if len(childrenParts) == 2 and childrenParts[0][:3] == 'Are' and childrenParts[1][len(childrenParts[1]) - 1] == '?':
-        parent_name = childrenParts[1].strip().replace('?', '').lower()
-        if all_alpha(parent_name):
+        parent_name = childrenParts[1][:len(childrenParts[1]) - 1].strip().lower()
+        if not all_alpha(parent_name):
             return "",[]
         child_names = [name.strip() for name in childrenParts[0].split(",")]
         for index in range(len(child_names)):
@@ -250,7 +250,7 @@ def children_ask_prompt(prompt):
                     child_names[index] = temp.replace('Are', '')
                     temp = child_names[index] 
             child_names[index] = temp.strip().lower()
-            if not all_alpha(child_names):
+            if not all_alpha(child_names[index]):
                 return "", []
         return parent_name, child_names
     return "", []
