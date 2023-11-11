@@ -165,10 +165,16 @@ def ask_response(kb, person1, relation, person2):
 def compound_ask(kb, people, relation, person):
     rel = ''
     not_rel = ''
+    same = False
     for i in people:
+        if i == person:
+            same = True
+            break
         rel += f'{relation}({i}, {person}),'
         not_rel += f'not_{relation}({i}, {person});'
-    if rel and not_rel:
+    if same:
+        print('No')
+    elif rel and not_rel:
         rel = rel[:-1]
         not_rel = not_rel[:-1]
         right = bool(list(kb.query(rel)))
