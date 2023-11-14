@@ -89,6 +89,7 @@ one_grandmother(Person) :-
 
 not_child(X, Y) :- X = Y.
 not_child(X, Y) :- relatives(X, Y), \+ child(X, Y).
+not_child(X, Y) :- two_parents(X), \+ child(X, Y).
 
 % This cannot be done normally because it would cause an infinite loop with itself like child(X, Y) :- without the assertz part
 % Make a person a parent of a child who has a sibling
