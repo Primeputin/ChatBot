@@ -26,7 +26,7 @@ def is_female(relation):
     return False
 
 def tell_response(kb, statement, person1, relation, person2):
-    if person1 == person2 or bool(list(kb.query(f'not_' + statement))): # second condition is important just in case it's already not valid
+    if bool(list(kb.query(f'not_' + statement))): # second condition is important just in case it's already not valid
         return -1 # contradiction
     if bool(list(kb.query(statement))):
         return 1 # entailment
@@ -151,17 +151,14 @@ def check_morf(kb, person, relation):
     return 0 # meaning no gender needed for the relation
 
 def ask_response(kb, person1, relation, person2):
-    if person1 == person2:
+    right = bool(list(kb.query(f"{relation}({person1}, {person2})")))
+    not_right = bool(list(kb.query(f"not_{relation}({person1}, {person2})")))
+    if right and not not_right:
+        print('Yes')
+    elif not right and not not_right:
+        print('I don\'t know')
+    elif not right and not_right:
         print('No')
-    else:
-        right = bool(list(kb.query(f"{relation}({person1}, {person2})")))
-        not_right = bool(list(kb.query(f"not_{relation}({person1}, {person2})")))
-        if right and not not_right:
-            print('Yes')
-        elif not right and not not_right:
-            print('I don\'t know')
-        elif not right and not_right:
-            print('No')
 def compound_ask(kb, people, relation, person):
     rel = ''
     not_rel = ''
