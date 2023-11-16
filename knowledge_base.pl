@@ -185,6 +185,7 @@ not_grandmother(Person1, Person2) :- not_grandparent(Person1, Person2).
 not_grandmother(Person1, Person2) :- two_grandmother(Person2), \+ grandmother(Person1, Person2).
  
 genderless_side_relative(Person1, Person2) :- siblings(Person1, Person), parent(Person, Person2), Person1 \= Person2.
+genderless_side_relative(Person1, Person2) :- siblings(Person1, Person), parent(Person, Child), siblings(Child, Person2), Person1 \= Person2.
 genderless_side_relative(Person1, Person2) :- married(Person1, Spouse), siblings(Spouse, Sibling), parent(Sibling, Person2), Person1 \= Person2.
 not_genderless_side_relative(Person1, Person2) :- relatives(Person1, Person2), \+ genderless_side_relative(Person1, Person2).
 not_genderless_side_relative(Person1, Person2) :- Person1 = Person2.
