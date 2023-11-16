@@ -7,7 +7,7 @@ kb.consult("knowledge_base.pl")
 simplified = {'brother': 'sibling', 'sister': 'sibling', 'father': 'parent', 'mother': 'parent',
               'grandfather': 'grandparent', 'grandmother': 'grandparent', 'son': 'child',
               'daughter': 'child', 'child': 'child', 'siblings': 'sibling',
-              'uncle': 'uncle', 'aunt': 'aunt'}
+              'uncle': 'genderless_side_relative', 'aunt': 'genderless_side_relative'}
 
 def make_lower(groups):
     return tuple(element.lower() for element in groups)
