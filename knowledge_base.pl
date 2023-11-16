@@ -91,7 +91,7 @@ one_grandmother(Person) :-
     NumGrandMother = 1.
 
 not_child(X, Y) :- X = Y.
-not_child(X, Y) :- relatives(X, Y), \+ child(X, Y).
+not_child(X, Y) :- relatives(X, Y), \+ child(X, Y), \+ (siblings(X, Z), child(Z, Y)). % \+ (siblings(X, Z), child(Z, Y)). this is included to not make it possible for him/her to have the same parent as his sibling
 not_child(X, Y) :- two_parents(X), \+ child(X, Y).
 
 % This cannot be done normally because it would cause an infinite loop with itself like child(X, Y) :- without the assertz part
@@ -130,8 +130,11 @@ not_sibling(Person1, Person2) :- Person1 = Person2.
 not_sibling(Person1, Person2) :- parent(Person1, Person2).
 not_sibling(Person1, Person2) :- child(Person1, Person2).
 not_sibling(Person1, Person2) :- grandparent(Person1, Person2); grandparent(Person2, Person1).
-not_sibling(Person1, Person2) :- uncle(Person1, Person2); uncle(Person2, Person1).
-not_sibling(Person1, Person2) :- aunt(Person1, Person2); uncle(Person2, Person1).
+not_sibling(Person1, Person2) :- genderless_side_relative(Person1, Person2); genderless_side_relative(Person2, Person1).
+not_sibling(Person1, Person2) :- sibling(Person1, Person), married(Person, Person2).
+% I can't do this because I'm using sibling not siblings for asserting:
+% not_sibling(Person1, Person2) :- relatives(Person1, Person), \+ sibling(Person, Person2).
+% so type the rules itself
 
 
 not_siblings(Person1, Person2) :- not_sibling(Person1, Person2).
@@ -213,6 +216,7 @@ relatives(Person1, Person2) :- genderless_side_relative(Person1, Person2); gende
 relatives(Person1, Person2) :- parent(Person1, Person2).
 relatives(Person1, Person2) :- child(Person1, Person2).
 relatives(Person1, Person2) :- married(Person1, Person2).
+relatives(Person1, Person2) :- siblings(Person1, Person), married(Person, Person2).
 relatives(Person1, Person2) :- descendant(Person1, Person2); descendant(Person2, Person1).
 relatives(Person1, _) :- genderless_side_relative(Person1, Person), descendant(Person, _). 
 relatives(_, Person1) :- genderless_side_relative(Person1, Person), descendant(Person, _).
