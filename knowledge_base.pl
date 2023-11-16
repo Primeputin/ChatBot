@@ -188,17 +188,15 @@ not_genderless_side_relative(Person1, Person2) :- Person1 = Person2.
 
  % for some reason, can't use brother/2
 uncle(Person1, Person2) :- male(Person1), genderless_side_relative(Person1, Person2).
-uncle(Person1, Person2) :- male(Person1), genderless_side_relative(Person1, Person2).
 not_uncle(Person1, _) :- not_male(Person1).
 not_uncle(Person1, Person2) :- not_genderless_side_relative(Person1, Person2).
 
 % for some reason, can't use sister/2
 aunt(Person1, Person2) :- not_male(Person1), genderless_side_relative(Person1, Person2).
-aunt(Person1, Person2) :- not_male(Person1), genderless_side_relative(Person1, Person2).
 not_aunt(Person1, _) :- male(Person1).
 not_aunt(Person1, Person2) :- not_genderless_side_relative(Person1, Person2).
 
-married(Person1, Person2) :- (parent(Person1, Person), parent(Person2, Person)); (parent(Person2, Person), mother(Person1, Person)), Person1 \= Person2.
+married(Person1, Person2) :- parent(Person1, Person), parent(Person2, Person),  Person1 \= Person2.
 not_married(Person1, _) :- \+ married(Person1, _).
 
 % Define a rule to check if X is a descendant of Y
