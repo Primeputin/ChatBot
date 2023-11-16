@@ -58,9 +58,9 @@
 :- dynamic two_parents/1.
 :- dynamic one_father/1.
 :- dynamic one_mother/1.
-:- dynamic two_grandparents/1.
-:- dynamic one_grandfather/1.
-:- dynamic one_grandmother/1.
+:- dynamic four_grandparents/1.
+:- dynamic two_grandfather/1.
+:- dynamic two_grandmother/1.
 
 :- dynamic descendant/2.
 
@@ -77,18 +77,18 @@ one_mother(Person) :-
     length(Mothers, NumMother),
     NumMother = 1.
 
-two_grandparents(Person) :-
-    findall(GrandParent, parent(GrandParent, Person), GrandParents),
+four_grandparents(Person) :-
+    findall(GrandParent, grandparent(GrandParent, Person), GrandParents),
     length(GrandParents, NumGrandParents),
-    NumGrandParents = 2.
-one_grandfather(Person) :-
-    findall(GrandFather, father(GrandFather, Person), GrandFathers),
+    NumGrandParents = 4.
+two_grandfather(Person) :-
+    findall(GrandFather, grandfather(GrandFather, Person), GrandFathers),
     length(GrandFathers, NumGrandFather),
-    NumGrandFather = 1.
-one_grandmother(Person) :-
-    findall(GrandMother, mother(GrandMother, Person), GrandMothers),
+    NumGrandFather = 2.
+two_grandmother(Person) :-
+    findall(GrandMother, grandmother(GrandMother, Person), GrandMothers),
     length(GrandMothers, NumGrandMother),
-    NumGrandMother = 1.
+    NumGrandMother = 2.
 
 not_child(X, Y) :- X = Y.
 not_child(X, Y) :- relatives(X, Y), \+ child(X, Y), \+ (siblings(X, Z), child(Z, Y)). % \+ (siblings(X, Z), child(Z, Y)). this is included to not make it possible for him/her to have the same parent as his sibling
@@ -165,7 +165,7 @@ sister(Person1, Person2) :-
 grandparent(Person1, Person2) :- parent(Person1, Person), parent(Person, Person2), Person1 \= Person2.
 not_grandparent(Person1, Person2) :- relatives(Person1, Person2), \+ grandparent(Person1, Person2).
 not_grandparent(Person1, Person2) :- Person1 = Person2.
-not_grandparent(Person1, Person2) :- two_grandparents(Person2), \+ grandparent(Person1, Person2). % there could only be a max of two grand parents
+not_grandparent(Person1, Person2) :- four_grandparents(Person2), \+ grandparent(Person1, Person2). % there could only be a max of two grand parents
 
 
 % no need to check not grandfather and grandmother wherein person1 = person2
@@ -175,14 +175,14 @@ grandfather(Person1, Person2) :-
     grandparent(Person1, Person2).
 not_grandfather(Person1, _) :- not_male(Person1).
 not_grandfather(Person1, Person2) :- not_grandparent(Person1, Person2).
-not_grandfather(Person1, Person2) :- one_grandfather(Person2), \+ grandfather(Person1, Person2).
+not_grandfather(Person1, Person2) :- two_grandfather(Person2), \+ grandfather(Person1, Person2).
 grandmother(Person1, Person2) :- 
     not_male(Person1),
     Person1 \= Person2,
     grandparent(Person1, Person2).
 not_grandmother(Person1, _) :- male(Person1).
 not_grandmother(Person1, Person2) :- not_grandparent(Person1, Person2).
-not_grandmother(Person1, Person2) :- one_grandmother(Person2), \+ grandmother(Person1, Person2).
+not_grandmother(Person1, Person2) :- two_grandmother(Person2), \+ grandmother(Person1, Person2).
  
 genderless_side_relative(Person1, Person2) :- siblings(Person1, Person), parent(Person, Person2), Person1 \= Person2.
 genderless_side_relative(Person1, Person2) :- married(Person1, Spouse), siblings(Spouse, Sibling), parent(Sibling, Person2), Person1 \= Person2.
