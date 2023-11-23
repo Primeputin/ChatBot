@@ -219,6 +219,6 @@ relatives(Person1, Person2) :- child(Person1, Person2).
 relatives(Person1, Person2) :- married(Person1, Person2).
 relatives(Person1, Person2) :- siblings(Person1, Person), married(Person, Person2).
 relatives(Person1, Person2) :- descendant(Person1, Person2); descendant(Person2, Person1).
-relatives(Person1, _) :- genderless_side_relative(Person1, Person), descendant(Person, _). 
-relatives(_, Person1) :- genderless_side_relative(Person1, Person), descendant(Person, _).
+relatives(Person1, Person2) :- genderless_side_relative(Person1, Person), descendant(Person, Person2). 
+relatives(Person2, Person1) :- genderless_side_relative(Person1, Person), descendant(Person, Person2).
 not_relatives(Person1, Person2) :- Person1 = Person2.
